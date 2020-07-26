@@ -1,17 +1,19 @@
 constructPage();
-
+var reaLink = "";
 //Injects everything into page
 function constructPage(){
 	//Loop through all the course rows
 	$('.crseRow1').each(function(i, obj) {
 		//Set currentTeacher
 		var currentTeacher = $(this).children().eq(6);
+		var teacherName = currentTeacher.text().substring(0, currentTeacher.text().indexOf(','));
+		//Lets get the link to RMP
 		//Add a link to RMP
-    	currentTeacher.wrapInner("<a href='' target='_blank' />");
+    	currentTeacher.wrapInner("<a href='" + getLink(teacherName, currentTeacher) + "' target='_blank' />");
 		//Create tooltip
     	currentTeacher.addClass("tooltip");
     	currentTeacher.append("<div class='top'><h3>Lorem Ipsum</h3> <p>Dolor sit amet, consectetur adipiscing elit.</p> <i></i> </div>");
-    	getTeacher(currentTeacher.children().eq(0).text().substring(0, currentTeacher.children().eq(0).text().indexOf(',')), currentTeacher);
+    	//getTeacher(teacherName, currentTeacher);
 	});
 }
 //Creates an object for a teacher with all their ratings
@@ -24,6 +26,10 @@ function getTeacher(name, currentTeacher){
 	var difficulty = 0;
 	var takeAgain = 0;
 	var link = getLink(name, currentTeacher);
+	//Check to see if the teacher was available on RMP
+	if(link === "NOT_AVAILABLE"){
+		return null;
+	}
 	//Perform get request for html for teacher page
 	$.get(link, function(data) {
   		//Lets convert the the string to html so we can read it w jquery
@@ -44,17 +50,20 @@ function getTeacher(name, currentTeacher){
 //@param currentTeacher the object pointing to the current listing we are at
 //@returns the correct link for RMP
 function getLink(name, currentTeacher){
-	var link = "https://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=George+Washington+University&schoolID=353&query=" + name;
+	var searchLink = "https://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=George+Washington+University&schoolID=353&query=" + name;
+	var link = "";
 	//Perform get request for html
-	$.get(link, function(data) {
+	$.get(searchLink, function(data) {
   		//Lets convert the the string to html so we can read it w jquery
   		var html = $(data);
   		//Find the link to professor page on RMP
-  		var id = "";
+  		var id = [];
+  		var teacherCount = 0;
+  		var subjects = [];
   		//Cycle through every listing on RMP until we are sure we found the matching professor
   		$(".listing.PROFESSOR", data).each(function(i, obj){
   			//Get the full name from RMP
-  			console.log($(this).children().eq(0).children().eq(1).children().eq(0).text());
+  			//console.log($(this).children().eq(0).children().eq(1).children().eq(0).text());
   			var fullName = $(this).children().eq(0).children().eq(1).children().eq(0).text();
   			//Get the first letter of the first name from RMP
   			var firstLetterRMP = fullName.substring(fullName.indexOf(',') + 2, fullName.indexOf(',') + 3);
@@ -62,61 +71,85 @@ function getLink(name, currentTeacher){
   			var listing = currentTeacher.children().eq(0).text();
   			//Get the first letter of the first name from the course schedule
   			var firstLetterCrse = listing.substring(listing.length - 1, listing.length);
-  			//Get the subject from the course schedule
-  			var label = currentTeacher.parent().children().eq(2).children().eq(1).attr('aria-label');
-  			var subjectCrse = subject[label.substring(0, label.indexOf(' '))];
-  			//Get the subject from RMP
-  			var sub = $(this).children().eq(0).children().eq(1).children().eq(1).text();
-  			var subjectRMP =  sub.substring(sub.indexOf(',') + 2);
   			//Now lets check if the first letter of the first name matches the first name on the course schedule
-  			//Also lets make sure they teach the same subject
-  			if((firstLetterCrse === firstLetterRMP) && (subjectCrse === subjectRMP)){
-  				//If we found the right professor lets get the id for their ratings page
-  				id = $(this).children().eq(0).attr('href');
-  				link = "https://www.ratemyprofessors.com" + id;
-  				return link;
+  			//We also want to check if there are two professors with the same last name and same first name
+  			if(firstLetterCrse === firstLetterRMP){
+  				teacherCount++;
+  				//If we found a viable  professor lets store the id for their ratings page
+  				id[teacherCount] = $(this).children().eq(0).attr('href');
+  				//Lets also store their subject incase if we have to narrow down the viable professors
+  				//Get the subject from RMP
+  				var sub = $(this).children().eq(0).children().eq(1).children().eq(1).text();
+  				var subjectRMP =  sub.substring(sub.indexOf(',') + 2).toUpperCase();
+  				subjects[teacherCount] = subjectRMP;
   			}
   		});
+		if(teacherCount > 0){
+			console.log(teacherCount);
+			console.log(name);
+			//Lets see if we found multiple viable professors 
+			if(teacherCount > 1){
+				//Then we have to compare subjects to narrow it down because GW doesnt give the full teacher name on the course schedule :/
+				//Get the subject from the course schedule
+  				var label = currentTeacher.parent().children().eq(2).children().eq(1).attr('aria-label');
+  				var subjectCrse = subject[label.substring(0, label.indexOf(' '))];
+  				console.log(subjectCrse);
+  				console.log(subjects[2]);
+  				for(i = 1; i <= teacherCount; i++){
+  					if(subjects[i] == subjectCrse){
+  						//We got the right professor
+  						link = "https://www.ratemyprofessors.com" + id[i];
+  						console.log(link);
+  					}
+  				}
+			}else{
+				//Otherwise if there is just 1 viable professor we found the right one!
+  				link = "https://www.ratemyprofessors.com" + id[1];
+  				console.log(link);
+  			}	
+		}else{
+			link = "NOT_AVAILABLE";
+		}
 	});
-
+	return link;
 }
 
 //Map to convert course schedule subject to RMP subject
 const subject = {
-	"ACA": "THEATRE AMP DANCE",
+	"ACA": "THEATRE",
 	"ACCY": "ACCOUNTING",
-	"AMST": "",
-	"ANAT": "",
-	"ANTH": "",
-	"APSC": "",
-	"ARAB": "",
-	"AH": "",
-	"ASTR": "",
-	"BIOC": "",
-	"BISC": "",
-	"BME": "",
-	"BMSC": "",
-	"BIOS": "",
-	"BADM": "",
-	"CANC": "",
-	"CAMA": "",
-	"CHEM": "",
-	"CHIN": "",
-	"CE": "",
-	"CLAS": "",
-	"CCAS": "",
-	"COMM": "",
-	"CSCI": "",
-	"CAH": "",
-	"CCE": "",
-	"CDE": "",
-	"CFN": "",
-	"CPJ": "",
-	"CSA": "",
-	"CNSL": "",
-	"CPED": "",
-	"DATS": "",
-	"DNSC": "",
+	"AMST": "AMERICAN STUDIES",
+	"ANAT": "BIOLOGY",
+	"ANTH": "ANTHROPOLOGY",
+	"APSC": "ENGINEERING",
+	"ARAB": "ARABIC",
+	"AH": "ART HISTORY",
+	"ASTR": "ASTRONOMY",
+	"BIOC": "BIOCHEMISTRY",
+	"BISC": "BIOLOGY",
+	"BME": "ENGINEERING",
+	"BMSC": "BIOLOGY",
+	"BIOS": "BIOLOGY",
+	"BADM": "BUSINESS",
+	"CANC": "BIOLOGY",
+	"CAMA": "FINANCE",
+	"CHEM": "CHEMISTRY",
+	"CHIN": "CHINESE",
+	"CE": "ENGINEERING",
+	"CLAS": "CLASSICS",
+	"CCAS": "COUNSELING",
+	"COMM": "COMMUNICATION",
+	"CSCI": "COMPUTER SCIENCE",
+	"CAH": "ART HISTORY",
+	"CCE": "DESIGN",
+	"CDE": "DESIGN",
+	"CFN": "COUNSELING",
+	"CPJ": "JOURNALISM",
+	"CSA": "FINE ARTS",
+	"CNSL": "COUNSELING",
+	"CPED": "INSTRUCTION",
+	"DATS": "COMPUTER SCIENCE",
+	"DNSC": "COMPUTER SCIENCE",
 	"EALL": "",
 	"ECON": "",
 	"EDUC": "",
