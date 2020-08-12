@@ -2,7 +2,7 @@
   "name": "RateMyGWU",
   "version": "1.0",
   "description": "Find professors ratings on the GW course schedule!",
-  "permissions": ["activeTab", "declarativeContent", "storage"],
+  "permissions": ["activeTab", "declarativeContent", "storage", "*://ratemyprofessors.com/*"],
   "options_page": "options.html",
   "background": {
       "scripts": ["/js/background.js"],

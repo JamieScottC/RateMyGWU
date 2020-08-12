@@ -6,7 +6,7 @@ function constructPage(){
 	$('.crseRow1').each(function(i, obj) {
 		//Set currentTeacher
 		var currentTeacher = $(this).children().eq(6);
-		var teacherName = currentTeacher.text().substring(0, currentTeacher.text().indexOf(','));
+		var teacherName = currentTeacher.text().substring(1, currentTeacher.text().indexOf(','));
 		//Get the professor listing text from the course schedule
 	  	var listing = currentTeacher.text();
 	  	//Get the first letter of the first name from the course schedule
@@ -54,6 +54,8 @@ function getTeacher(name, currentTeacher){
 //@param currentTeacher the object pointing to the current listing we are at
 //@returns the correct link for RMP
 function getLink(name, currentTeacher, firstLetterCrse){
+	//Find the link to professor page on RMP
+	console.log(name);
 	var searchLink = "https://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=George+Washington+University&schoolID=353&query=" + name;
 	var link = "";
 	//Perform get request for html
@@ -63,7 +65,6 @@ function getLink(name, currentTeacher, firstLetterCrse){
 		success: function(data){ 
 	  		//Lets convert the the string to html so we can read it w jquery
 	  		var html = $(data);
-	  		//Find the link to professor page on RMP
 	  		var id = [];
 	  		var teacherCount = 0;
 	  		var subjects = [];
@@ -71,6 +72,8 @@ function getLink(name, currentTeacher, firstLetterCrse){
 	  		$(".listing.PROFESSOR", data).each(function(i, obj){
 	  			//Get the full name from RMP
 	  			var fullName = $(this).children().eq(0).children().eq(1).children().eq(0).text();
+	  			console.log(name + " " + fullName + " " + searchLink);
+	  			console.log($(this).parent());
 	  			//Get the first letter of the first name from RMP
 	  			var firstLetterRMP = fullName.substring(fullName.indexOf(',') + 2, fullName.indexOf(',') + 3);
 	  			//Now lets check if the first letter of the first name matches the first name on the course schedule
