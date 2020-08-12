@@ -55,8 +55,7 @@ function getTeacher(name, currentTeacher){
 //@returns the correct link for RMP
 function getLink(name, currentTeacher, firstLetterCrse){
 	//Find the link to professor page on RMP
-	console.log(name);
-	var searchLink = "https://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=George+Washington+University&schoolID=353&query=" + name;
+	var searchLink = "https://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=George+Washington+University&schoolID=353&query= " + name;
 	var link = "";
 	//Perform get request for html
 	$.ajax({
