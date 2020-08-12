@@ -7,9 +7,12 @@ function constructPage(){
 		//Set currentTeacher
 		var currentTeacher = $(this).children().eq(6);
 		var teacherName = currentTeacher.text().substring(0, currentTeacher.text().indexOf(','));
-		//Lets get the link to RMP
-		//Add a link to RMP
-    	currentTeacher.wrapInner("<a href='" + getLink(teacherName, currentTeacher) + "' target='_blank' />");
+		//Get the professor listing text from the course schedule
+	  	var listing = currentTeacher.text();
+	  	//Get the first letter of the first name from the course schedule
+	  	var firstLetterCrse = listing.substring(listing.length - 1, listing.length);
+		//Construct the teacher rating information as well as add links to teacher name to RMP
+		getLink(teacherName, currentTeacher, firstLetterCrse);
 		//Create tooltip
     	currentTeacher.addClass("tooltip");
     	currentTeacher.append("<div class='top'><h3>Lorem Ipsum</h3> <p>Dolor sit amet, consectetur adipiscing elit.</p> <i></i> </div>");
@@ -30,6 +33,7 @@ function getTeacher(name, currentTeacher){
 	if(link === "NOT_AVAILABLE"){
 		return null;
 	}
+
 	//Perform get request for html for teacher page
 	$.get(link, function(data) {
   		//Lets convert the the string to html so we can read it w jquery
@@ -45,73 +49,73 @@ function getTeacher(name, currentTeacher){
 	};
 	return teacher;
 }
-//Retrieves link correct link from RMP
+//Retrieves link correct link from RMP and adds it to the teacher name
 //@param name the name of the teacher we are trying to find the link for
 //@param currentTeacher the object pointing to the current listing we are at
 //@returns the correct link for RMP
-function getLink(name, currentTeacher){
+function getLink(name, currentTeacher, firstLetterCrse){
 	var searchLink = "https://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=George+Washington+University&schoolID=353&query=" + name;
 	var link = "";
 	//Perform get request for html
-	$.get(searchLink, function(data) {
-  		//Lets convert the the string to html so we can read it w jquery
-  		var html = $(data);
-  		//Find the link to professor page on RMP
-  		var id = [];
-  		var teacherCount = 0;
-  		var subjects = [];
-  		//Cycle through every listing on RMP until we are sure we found the matching professor
-  		$(".listing.PROFESSOR", data).each(function(i, obj){
-  			//Get the full name from RMP
-  			//console.log($(this).children().eq(0).children().eq(1).children().eq(0).text());
-  			var fullName = $(this).children().eq(0).children().eq(1).children().eq(0).text();
-  			//Get the first letter of the first name from RMP
-  			var firstLetterRMP = fullName.substring(fullName.indexOf(',') + 2, fullName.indexOf(',') + 3);
-  			//Get the professor listing text from the course schedule
-  			var listing = currentTeacher.children().eq(0).text();
-  			//Get the first letter of the first name from the course schedule
-  			var firstLetterCrse = listing.substring(listing.length - 1, listing.length);
-  			//Now lets check if the first letter of the first name matches the first name on the course schedule
-  			//We also want to check if there are two professors with the same last name and same first name
-  			if(firstLetterCrse === firstLetterRMP){
-  				teacherCount++;
-  				//If we found a viable  professor lets store the id for their ratings page
-  				id[teacherCount] = $(this).children().eq(0).attr('href');
-  				//Lets also store their subject incase if we have to narrow down the viable professors
-  				//Get the subject from RMP
-  				var sub = $(this).children().eq(0).children().eq(1).children().eq(1).text();
-  				var subjectRMP =  sub.substring(sub.indexOf(',') + 2).toUpperCase();
-  				subjects[teacherCount] = subjectRMP;
-  			}
-  		});
-		if(teacherCount > 0){
-			console.log(teacherCount);
-			console.log(name);
-			//Lets see if we found multiple viable professors 
-			if(teacherCount > 1){
-				//Then we have to compare subjects to narrow it down because GW doesnt give the full teacher name on the course schedule :/
-				//Get the subject from the course schedule
-  				var label = currentTeacher.parent().children().eq(2).children().eq(1).attr('aria-label');
-  				var subjectCrse = subject[label.substring(0, label.indexOf(' '))];
-  				console.log(subjectCrse);
-  				console.log(subjects[2]);
-  				for(i = 1; i <= teacherCount; i++){
-  					if(subjects[i] == subjectCrse){
-  						//We got the right professor
-  						link = "https://www.ratemyprofessors.com" + id[i];
-  						console.log(link);
-  					}
-  				}
+	$.ajax({
+		type: "GET",
+		url: searchLink,
+		success: function(data){ 
+	  		//Lets convert the the string to html so we can read it w jquery
+	  		var html = $(data);
+	  		//Find the link to professor page on RMP
+	  		var id = [];
+	  		var teacherCount = 0;
+	  		var subjects = [];
+	  		//Cycle through every listing on RMP until we are sure we found the matching professor
+	  		$(".listing.PROFESSOR", data).each(function(i, obj){
+	  			//Get the full name from RMP
+	  			var fullName = $(this).children().eq(0).children().eq(1).children().eq(0).text();
+	  			//Get the first letter of the first name from RMP
+	  			var firstLetterRMP = fullName.substring(fullName.indexOf(',') + 2, fullName.indexOf(',') + 3);
+	  			//Now lets check if the first letter of the first name matches the first name on the course schedule
+	  			//We also want to check if there are two professors with the same last name and same first name
+	  			if(firstLetterCrse === firstLetterRMP){
+	  				teacherCount++;
+	  				//If we found a viable  professor lets store the id for their ratings page
+	  				id[teacherCount] = $(this).children().eq(0).attr('href');
+	  				//Lets also store their subject incase if we have to narrow down the viable professors
+	  				//Get the subject from RMP
+	  				var sub = $(this).children().eq(0).children().eq(1).children().eq(1).text();
+	  				var subjectRMP =  sub.substring(sub.indexOf(',') + 2).toUpperCase();
+	  				subjects[teacherCount] = subjectRMP;
+	  			}
+	  		});
+			if(teacherCount > 0){
+				//Lets see if we found multiple viable professors 
+				if(teacherCount > 1){
+					//Then we have to compare subjects to narrow it down because GW doesnt give the full teacher name on the course schedule :/
+					//Get the subject from the course schedule
+	  				var label = currentTeacher.parent().children().eq(2).children().eq(1).attr('aria-label');
+	  				var subjectCrse = subject[label.substring(0, label.indexOf(' '))];
+	  				//console.log(subjectCrse);
+	  				//console.log(subjects[2]);
+	  				for(i = 1; i <= teacherCount; i++){
+	  					if(subjects[i] == subjectCrse){
+	  						//We got the right professor
+	  						link = "https://www.ratemyprofessors.com" + id[i];
+	  						//Add the link to RMP
+	  						currentTeacher.wrapInner("<a href='" + link + "' target='_blank' />");
+	  					}
+	  				}
+				}else{
+					//Otherwise if there is just 1 viable professor we found the right one!
+	  				link = "https://www.ratemyprofessors.com" + id[1];
+	  				//Add the link to RMP
+	  				currentTeacher.wrapInner("<a href='" + link + "' target='_blank' />");
+	  			}	
 			}else{
-				//Otherwise if there is just 1 viable professor we found the right one!
-  				link = "https://www.ratemyprofessors.com" + id[1];
-  				console.log(link);
-  			}	
-		}else{
-			link = "NOT_AVAILABLE";
+				link = "NOT_AVAILABLE";
+				//Add the link to RMP
+				currentTeacher.wrapInner("<a href='" + link + "' target='_blank' />");
+			}
 		}
 	});
-	return link;
 }
 
 //Map to convert course schedule subject to RMP subject
