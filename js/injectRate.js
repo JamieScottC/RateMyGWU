@@ -11,49 +11,52 @@ function constructPage(){
 	  	var listing = currentTeacher.text();
 	  	//Get the first letter of the first name from the course schedule
 	  	var firstLetterCrse = listing.substring(listing.length - 1, listing.length);
-		//Construct the teacher rating information as well as add links to teacher name to RMP
-		getLink(teacherName, currentTeacher, firstLetterCrse);
 		//Create tooltip
     	currentTeacher.addClass("tooltip");
-    	currentTeacher.append("<div class='top'><h3>Lorem Ipsum</h3> <p>Dolor sit amet, consectetur adipiscing elit.</p> <i></i> </div>");
-    	//getTeacher(teacherName, currentTeacher);
+    	currentTeacher.append("<div class='top'><h3>Not Avaiable</h3> <p>Overall Quality: 0<br>Level of Difficulty: 0<br>Would Take Again: 0%<br>Number of Ratings: 0</p> <i></i> </div>");
+		//Construct the teacher rating information as well as add links to teacher name to RMP
+		setLink(teacherName, currentTeacher, firstLetterCrse);	
 	});
 }
 //Creates an object for a teacher with all their ratings
-//@param name the name of the teacher we are creating
-//@param currentTeacher the object pointing the the current listing we are at
-//@returns a teacher object that has all their ratings
-function getTeacher(name, currentTeacher){
-	var firstName = '';
+//@param link the link to the ratings page
+//@param fullName the full name of the teacher
+//@param currentTeacher the object pointing to the current listing we are at
+function setRating(link, fullName, currentTeacher){
 	var overall = 0;
 	var difficulty = 0;
 	var takeAgain = 0;
-	var link = getLink(name, currentTeacher);
+	var numRatings = 0;
 	//Check to see if the teacher was available on RMP
 	if(link === "NOT_AVAILABLE"){
-		return null;
+		return;
 	}
 
 	//Perform get request for html for teacher page
-	$.get(link, function(data) {
-  		//Lets convert the the string to html so we can read it w jquery
-  		var html = $(data);
-  		
+	$.ajax({
+		type: "GET",
+		url: link,
+		success: function(data){
+	  		//Lets convert the the string to html so we can read it w jquery
+	  		var html = $(data);
+	  		//Find all the data we need to construct the tooltip
+	  		overall = $(".RatingValue__Numerator-qw8sqy-2", data).text();
+	  		difficulty = $("FeedbackItem__FeedbackNumber-uof32n-1", data).text();
+	  		takeAgain = $("FeedbackItem__FeedbackNumber-uof32n-1", data).text();
+	  		numRatings = $("RatingValue__NumRatings-qw8sqy-0" ,data).children().eq(0).children().eq(0).text();
+	  		//Construct the tooltip
+	  		var top = currentTeacher.find(".top");
+	  		console.log(top.text());
+	  		top.text("" + fullName);
+	  		console.log(top.text());
+  		}
 	});
-	var teacher = {
-		firstName: firstName,
-		lastName: name,
-		overall: overall,
-		difficulty: difficulty,
-		takeAgain: takeAgain
-	};
-	return teacher;
 }
-//Retrieves link correct link from RMP and adds it to the teacher name
+//Retrieves link correct link from RMP and adds it to the teacher name. It also sets all the info for the tooltip
 //@param name the name of the teacher we are trying to find the link for
 //@param currentTeacher the object pointing to the current listing we are at
-//@returns the correct link for RMP
-function getLink(name, currentTeacher, firstLetterCrse){
+//@param firstLetterCrse The first letter of the teacher on the gw course schedule
+function setLink(name, currentTeacher, firstLetterCrse){
 	//Find the link to professor page on RMP
 	var searchLink = "https://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=George+Washington+University&schoolID=353&query= " + name;
 	var link = "";
@@ -67,12 +70,12 @@ function getLink(name, currentTeacher, firstLetterCrse){
 	  		var id = [];
 	  		var teacherCount = 0;
 	  		var subjects = [];
+	  		var fullName = "";
 	  		//Cycle through every listing on RMP until we are sure we found the matching professor
 	  		$(".listing.PROFESSOR", data).each(function(i, obj){
 	  			//Get the full name from RMP
-	  			var fullName = $(this).children().eq(0).children().eq(1).children().eq(0).text();
-	  			console.log(name + " " + fullName + " " + searchLink);
-	  			console.log($(this).parent());
+	  		    fullName = $(this).children().eq(0).children().eq(1).children().eq(0).text();
+	  			//console.log(name + " " + fullName + " " + searchLink);
 	  			//Get the first letter of the first name from RMP
 	  			var firstLetterRMP = fullName.substring(fullName.indexOf(',') + 2, fullName.indexOf(',') + 3);
 	  			//Now lets check if the first letter of the first name matches the first name on the course schedule
@@ -88,7 +91,7 @@ function getLink(name, currentTeacher, firstLetterCrse){
 	  				subjects[teacherCount] = subjectRMP;
 	  			}
 	  		});
-			if(teacherCount > 0){
+						if(teacherCount > 0){
 				//Lets see if we found multiple viable professors 
 				if(teacherCount > 1){
 					//Then we have to compare subjects to narrow it down because GW doesnt give the full teacher name on the course schedule :/
@@ -101,24 +104,24 @@ function getLink(name, currentTeacher, firstLetterCrse){
 	  					if(subjects[i] == subjectCrse){
 	  						//We got the right professor
 	  						link = "https://www.ratemyprofessors.com" + id[i];
-	  						//Add the link to RMP
-	  						currentTeacher.wrapInner("<a href='" + link + "' target='_blank' />");
+	  						
 	  					}
 	  				}
 				}else{
 					//Otherwise if there is just 1 viable professor we found the right one!
 	  				link = "https://www.ratemyprofessors.com" + id[1];
-	  				//Add the link to RMP
-	  				currentTeacher.wrapInner("<a href='" + link + "' target='_blank' />");
 	  			}	
 			}else{
-				link = "NOT_AVAILABLE";
-				//Add the link to RMP
-				currentTeacher.wrapInner("<a href='" + link + "' target='_blank' />");
+				link = "NOT_AVAILABLE";			
 			}
-		}
-	});
-}
+			//Add the link to RMP
+	  		currentTeacher.wrapInner("<a href='" + link + "' target='_blank' />");
+	  		//Set the ratings info on gw course schedule
+	  		setRating(link, fullName, currentTeacher);
+			}
+		});
+	}
+
 
 //Map to convert course schedule subject to RMP subject
 const subject = {
