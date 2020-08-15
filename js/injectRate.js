@@ -23,7 +23,12 @@ function constructPage(){
 //@param currentTeacher the object pointing to the current listing we are at
 function constructTooltip(fullName, currentTeacher, overall, difficulty, takeAgain, numRatings){
 	var top = currentTeacher.find(".top");
-	top.text("" + fullName);
+	top.find("h3").text("" + fullName);
+	if(fullName != "Not Available"){
+		top.find("p").html("Overall Quality: " + overall + "<br>Level of Difficulty: " + difficulty + "<br>Would Take Again: " + takeAgain + "<br>Overall Quality Based on " + numRatings);
+	}else{
+		top.find("p").html("Ratings for this teacher are not available because either no one has created a Rate My Professor page for them or because they are listed under the wrong department on Rate My Professor");
+	}
 }
 //Retrieves link correct link from RMP and adds it to the teacher name. It also sets all the info for the tooltip
 //@param name the name of the teacher we are trying to find the link for
@@ -31,7 +36,7 @@ function constructTooltip(fullName, currentTeacher, overall, difficulty, takeAga
 //@param firstLetterCrse The first letter of the teacher on the gw course schedule
 function getInfo(name, currentTeacher, firstLetterCrse){
 	//Find the link to professor page on RMP
-	var searchLink = "https://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=George+Washington+University&schoolID=353&query= " + name;
+	var searchLink = "https://www.ratemyprofessors.com/search.jsp?queryoption=HEADER&queryBy=teacherName&schoolName=George+Washington+University&schoolID=353&query=" + name;
 	var link = "";
 	//Get the subject from the course schedule
 	var label = currentTeacher.parent().children().eq(2).children().eq(1).attr('aria-label');
