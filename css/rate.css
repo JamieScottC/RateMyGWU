@@ -10,7 +10,7 @@
     transform:translate(-50%, -100%);
     padding:10px 20px;
     color:#444444;
-    background-color:#EEEEEE;
+    background-color: #005588;
     font-weight:normal;
     font-size:13px;
     border-radius:8px;
@@ -42,10 +42,16 @@
     height:18px;
     left:50%;
     transform:translate(-50%,-50%) rotate(45deg);
-    background-color:#EEEEEE;
+    background-color:#2375A6;
     box-shadow:0 1px 8px rgba(0,0,0,0.5);
 }
 .tooltip a{
 	color: inherit;
   	text-decoration: inherit;
+}
+.top h3{
+    color: white !important;
+}
+.top p{
+    color: white !important;
 }
