@@ -7,5 +7,5 @@ You may also click on the professors name to be linked directly to their Rate My
 # License
 This project is licensed under the MIT License - see the <a href="https://github.com/JamieScottC/RateMyGWU/blob/master/LICENSE" target="_blank">LICENSE.md</a> file for details
 # Acknowledgments
-Thanks to <a href="https://ratemyprofessor.com" target="_blank">Rate My Professor</a> <br />
+Thanks to <a href="https://www.ratemyprofessor.com" target="_blank">Rate My Professor</a> <br />
 Thanks to all the professors at GWU for keeping the ratings high!
