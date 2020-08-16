@@ -1,7 +1,7 @@
 {
   "name": "RateMyGWU",
   "version": "1.0",
-  "description": "Find professors ratings on the GW course schedule!",
+  "description": "Displays Rate My Professors information directly on the GW schedule of classes",
   "permissions": ["activeTab", "declarativeContent", "storage", "*://www.ratemyprofessors.com/*", "http://fonts.googleapis.com/", "https://fonts.googleapis.com/"],
   "web_accessible_resources": [
   "css/rate.css",
