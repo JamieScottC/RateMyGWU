@@ -1,5 +1,3 @@
-console.log("dot");
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	//RMP search page----
   	var searchLink = request.searchLink;
@@ -40,8 +38,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 				if(teacherCount > 1){
 					//Then we have to compare subjects to narrow it down because GW doesnt give the full teacher name on the course schedule :/			
 	  				var subjectCrse = subject[label.substring(0, label.indexOf(' '))];
-	  				//console.log(subjectCrse);
-	  				//console.log(subjects[2]);
 	  				for(i = 1; i <= teacherCount; i++){
 	  					if(subjects[i].includes(subjectCrse)){
 	  						//We got the right professor

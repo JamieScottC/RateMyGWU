@@ -2,7 +2,7 @@
   "name": "RateMyGWU",
   "version": "1.0",
   "description": "Displays Rate My Professors information directly on the GW schedule of classes",
-  "permissions": ["activeTab", "declarativeContent", "storage", "*://www.ratemyprofessors.com/*", "http://fonts.googleapis.com/", "https://fonts.googleapis.com/"],
+  "permissions": ["*://www.ratemyprofessors.com/*", "http://fonts.googleapis.com/", "https://fonts.googleapis.com/"],
   "web_accessible_resources": [
   "css/rate.css",
   "fonts/Manrope/Manrope-VariableFont_wght.ttf"
@@ -20,7 +20,6 @@
         }
     ],
   "page_action": {
-      "default_popup": "popup.html",
       "default_icon": {
         "16": "images/RateMyGWULogo16.png",
         "32": "images/RateMyGWULogo32.png",

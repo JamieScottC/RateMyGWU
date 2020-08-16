@@ -45,7 +45,6 @@ function getInfo(name, currentTeacher, firstLetterCrse){
 		link = response.returnLink;
 		//Add the link that directs user to RMP
 		currentTeacher.wrapInner("<a href='" + link + "' target='_blank' />");
-		console.log(response.fullName);
 		constructTooltip(response.fullName, currentTeacher, response.overall, response.difficulty, response.takeAgain, response.numRatings);
 	});
 	}
