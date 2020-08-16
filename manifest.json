@@ -2,7 +2,11 @@
   "name": "RateMyGWU",
   "version": "1.0",
   "description": "Find professors ratings on the GW course schedule!",
-  "permissions": ["activeTab", "declarativeContent", "storage", "*://www.ratemyprofessors.com/*"],
+  "permissions": ["activeTab", "declarativeContent", "storage", "*://www.ratemyprofessors.com/*", "http://fonts.googleapis.com/", "https://fonts.googleapis.com/"],
+  "web_accessible_resources": [
+  "css/rate.css",
+  "fonts/Manrope/Manrope-VariableFont_wght.ttf"
+ ],
   "background": {
       "scripts": ["/js/jquery-3.5.1.min.js", "/js/background.js"],
       "persistent": false

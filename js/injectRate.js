@@ -13,7 +13,7 @@ function constructPage(){
 	  	var firstLetterCrse = listing.substring(listing.length - 1, listing.length);
 		//Create tooltip
     	currentTeacher.addClass("tooltip");
-    	currentTeacher.append("<div class='top'><h3>Not Avaiable</h3> <p>Overall Quality: 0<br>Level of Difficulty: 0<br>Would Take Again: 0%<br>Number of Ratings: 0</p> <i></i> </div>");
+    	currentTeacher.append("<div class='top'><h3>Not Avaiable</h3><hr><p>Overall Quality: 0<br>Level of Difficulty: 0<br>Would Take Again: 0%<br>Number of Ratings: 0</p> <i></i> </div>");
 		//Construct the teacher rating information as well as add links to teacher name to RMP
 		getInfo(teacherName, currentTeacher, firstLetterCrse);	
 	});
@@ -25,7 +25,7 @@ function constructTooltip(fullName, currentTeacher, overall, difficulty, takeAga
 	var top = currentTeacher.find(".top");
 	top.find("h3").text("" + fullName);
 	if(fullName != "Not Available"){
-		top.find("p").html("Overall Quality: " + overall + "<br>Level of Difficulty: " + difficulty + "<br>Would Take Again: " + takeAgain + "<br>Overall Quality Based on " + numRatings);
+		top.find("p").html("Overall Quality: " + overall + " <sup>/ 5</sup><br><br>Level of Difficulty: " + difficulty + "<br><br>Would Take Again: " + takeAgain + "<br><br>Overall Quality Based on " + numRatings);
 	}else{
 		top.find("p").html("Ratings for this teacher are not available because either no one has created a Rate My Professor page for them or because they are listed under the wrong department on Rate My Professor");
 	}

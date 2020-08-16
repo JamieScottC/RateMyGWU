@@ -12,7 +12,7 @@
     color:#444444;
     background-color: #005588;
     font-weight:normal;
-    font-size:13px;
+    font-family: Manrope;
     border-radius:8px;
     position:absolute;
     z-index:99999999;
@@ -50,8 +50,16 @@
   	text-decoration: inherit;
 }
 .top h3{
+    font-size: 23px;
     color: white !important;
 }
 .top p{
+    font-size: 14px !important;
     color: white !important;
+}
+@font-face {
+ font-family: 'Manrope';
+ font-style: normal;
+ font-weight: 400;
+ src: url('chrome-extension://__MSG_@@extension_id__/fonts/Manrope/Manrope-VariableFont_wght.ttf'); 
 }

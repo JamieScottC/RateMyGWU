@@ -20,7 +20,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	  		$(".listing.PROFESSOR", data).each(function(i, obj){
 	  			//Get the full name from RMP
 	  		    fullName = $(this).children().eq(0).children().eq(1).children().eq(0).text();
-	  			console.log(name + " " + fullName + " " + searchLink);
 	  			//Get the first letter of the first name from RMP
 	  			var firstLetterRMP = fullName.substring(fullName.indexOf(',') + 2, fullName.indexOf(',') + 3);
 	  			//Now lets check if the first letter of the first name matches the first name on the course schedule
@@ -76,9 +75,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 				  		//Find all the data we need to construct the tooltip
 				  		overall = $(".RatingValue__Numerator-qw8sqy-2", data).text();
 				  		ratingSplice = $(".FeedbackItem__FeedbackNumber-uof32n-1", data).text();
-				  		difficulty = ratingSplice.substring(0, ratingSplice.indexOf("%") + 1);
-				  		takeAgain = ratingSplice.substring(ratingSplice.indexOf("%") + 1, ratingSplice.length);
+				  		takeAgain = ratingSplice.substring(0, ratingSplice.indexOf("%") + 1);
+				  		difficulty = ratingSplice.substring(ratingSplice.indexOf("%") + 1, ratingSplice.length);
 				  		numRatings = $(".RatingValue__NumRatings-qw8sqy-0", data).children().eq(0).children().eq(0).text();
+				  		fullName = $(".NameTitle__Name-dowf0z-0.jeLOXk", data).text();
 				  		sendResponse({returnLink: link, overall: overall, difficulty: difficulty, takeAgain: takeAgain, numRatings: numRatings, fullName: fullName});
 			  		}
 				});
