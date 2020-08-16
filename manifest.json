@@ -13,7 +13,7 @@
   },
   "content_scripts": [
         {
-            "matches": ["https://my.gwu.edu/mod/pws/courses.cfm?campId=1&termId=*&subjId=*"],
+            "matches": ["https://my.gwu.edu/mod/pws/courses.cfm?campId=*&termId=*&subjId=*"],
             "js": ["/js/jquery-3.5.1.min.js", "/js/injectRate.js"],
             "css" : ["/css/rate.css"],
             "run_at" : "document_end"
